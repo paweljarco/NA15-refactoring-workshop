@@ -16,6 +16,22 @@ UnexpectedEventException::UnexpectedEventException()
     : std::runtime_error("Unexpected event received!")
 {}
 
+Direction Controller::changeDirection(char d) {
+    switch (d) {
+        case 'U':
+            return Direction_UP;
+        case 'D':
+            return Direction_DOWN;
+        case 'L':
+            return Direction_LEFT;
+        case 'R':
+            return Direction_RIGHT;
+        default:
+            throw ConfigurationError();
+    }
+}
+
+
 Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePort, std::string const& p_config)
     : m_displayPort(p_displayPort),
       m_foodPort(p_foodPort),
@@ -33,22 +49,8 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
         m_foodPosition = std::make_pair(foodX, foodY);
 
         istr >> d;
-        switch (d) {
-            case 'U':
-                m_currentDirection = Direction_UP;
-                break;
-            case 'D':
-                m_currentDirection = Direction_DOWN;
-                break;
-            case 'L':
-                m_currentDirection = Direction_LEFT;
-                break;
-            case 'R':
-                m_currentDirection = Direction_RIGHT;
-                break;
-            default:
-                throw ConfigurationError();
-        }
+        m_currentDirection = changeDirection(d);
+
         istr >> length;
 
         while (length) {

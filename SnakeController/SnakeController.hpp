@@ -34,6 +34,8 @@ public:
 
     bool checkForCollisionWithFood(IFood const& food);
 
+    Direction changeDirection(char d);
+
 private:
     struct Segment
     {
