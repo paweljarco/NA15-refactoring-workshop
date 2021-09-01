@@ -85,7 +85,19 @@ bool Controller::checkForCollisionWithFood(IFood const& receivedFood) {
     return false;
 }
 
-void Controller::updateSnakePosition(const Segment& newHead, bool& gameState) {
+void Controller::updateSnakePosition() {
+    for (auto &segment : m_segments) {
+        if (not --segment.ttl) {
+            DisplayInd l_evt;
+            l_evt.x = segment.x;
+            l_evt.y = segment.y;
+            l_evt.value = Cell_FREE;
+            m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
+        }
+    }
+}
+
+void Controller::checkSnakePosition(const Segment& newHead, bool& gameState) {
     if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
         m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
@@ -95,15 +107,7 @@ void Controller::updateSnakePosition(const Segment& newHead, bool& gameState) {
         m_scorePort.send(std::make_unique<EventT<LooseInd>>());
         gameState = true;
     } else {
-        for (auto &segment : m_segments) {
-            if (not --segment.ttl) {
-                DisplayInd l_evt;
-                l_evt.x = segment.x;
-                l_evt.y = segment.y;
-                l_evt.value = Cell_FREE;
-                m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
-            }
-        }
+        updateSnakePosition();
     }
 }
 
@@ -122,31 +126,9 @@ void Controller::receive(std::unique_ptr<Event> e)
         bool lost = checkForCollisionWithTail(newHead);
 
 
-        if (not lost)  updateSnakePosition(newHead, lost);
-    /*
-            if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
-                m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
-                m_foodPort.send(std::make_unique<EventT<FoodReq>>());
-            } else if (newHead.x < 0 or newHead.y < 0 or
-                       newHead.x >= m_mapDimension.first or
-                       newHead.y >= m_mapDimension.second) {
-                m_scorePort.send(std::make_unique<EventT<LooseInd>>());
-                lost = true;
-            } else {
-                for (auto &segment : m_segments) {
-                    if (not --segment.ttl) {
-                        DisplayInd l_evt;
-                        l_evt.x = segment.x;
-                        l_evt.y = segment.y;
-                        l_evt.value = Cell_FREE;
-
-                        m_displayPort.send(std::make_unique<EventT<DisplayInd>>(l_evt));
-                    }
-                }
-            }
+        if (not lost) {
+            checkSnakePosition(newHead, lost);
         }
-        */
-
         if (not lost) {
             m_segments.push_front(newHead);
             DisplayInd placeNewHead;

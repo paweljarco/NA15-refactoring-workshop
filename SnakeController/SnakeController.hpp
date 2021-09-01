@@ -36,7 +36,7 @@ public:
 
     Direction changeDirection(char d);
 
-    
+    void updateSnakePosition();
 
 private:
     struct Segment
@@ -59,7 +59,7 @@ private:
 public:
 
     bool checkForCollisionWithTail(const Segment& newHead);
-    void updateSnakePosition(const Segment& newHead, bool& gameState);
+    void checkSnakePosition(const Segment& newHead, bool& gameState);
 };
 
 } // namespace Snake
