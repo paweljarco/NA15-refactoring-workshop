@@ -38,6 +38,8 @@ public:
 
     void updateSnakePosition();
 
+    void boardUpdate(std::unique_ptr<Event>& e);
+
 private:
     struct Segment
     {
