@@ -32,6 +32,8 @@ public:
 
     void receive(std::unique_ptr<Event> e) override;
 
+    bool checkForCollisionWithFood(FoodInd const& food);
+
 private:
     struct Segment
     {

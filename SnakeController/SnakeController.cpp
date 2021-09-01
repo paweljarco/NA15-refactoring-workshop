@@ -63,7 +63,7 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     }
 }
 
-bool Controller::checkForCollision(const Segment& newHead) {
+bool Controller::checkForCollisionWithTail(const Segment& newHead) {
         for (auto segment : m_segments) {
             if (segment.x == newHead.x and segment.y == newHead.y) {
                 m_scorePort.send(std::make_unique<EventT<LooseInd>>());
@@ -73,6 +73,16 @@ bool Controller::checkForCollision(const Segment& newHead) {
         }
         return false;
 }
+
+bool Controller::checkForCollisionWithFood(FoodInd const& receivedFood) {
+    for (auto const& segment : m_segments) {
+        if (segment.x == receivedFood.x and segment.y == receivedFood.y) {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 void Controller::receive(std::unique_ptr<Event> e)
 {
@@ -139,13 +149,15 @@ void Controller::receive(std::unique_ptr<Event> e)
             try {
                 auto receivedFood = *dynamic_cast<EventT<FoodInd> const&>(*e);
 
-                bool requestedFoodCollidedWithSnake = false;
+                bool requestedFoodCollidedWithSnake = checkForCollisionWithFood(receivedFood);
+            /*
                 for (auto const& segment : m_segments) {
                     if (segment.x == receivedFood.x and segment.y == receivedFood.y) {
                         requestedFoodCollidedWithSnake = true;
                         break;
                     }
                 }
+                */
 
                 if (requestedFoodCollidedWithSnake) {
                     m_foodPort.send(std::make_unique<EventT<FoodReq>>());
