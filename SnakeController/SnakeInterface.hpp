@@ -42,12 +42,16 @@ struct DisplayInd
     Cell value;
 };
 
-struct FoodInd
+struct IFood
+{
+    int x;
+    int y;
+};
+
+struct FoodInd : public IFood
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x40;
 
-    int x;
-    int y;
 };
 
 struct FoodReq
@@ -55,12 +59,9 @@ struct FoodReq
     static constexpr std::uint32_t MESSAGE_ID = 0x41;
 };
 
-struct FoodResp
+struct FoodResp : public IFood
 {
     static constexpr std::uint32_t MESSAGE_ID = 0x42;
-
-    int x;
-    int y;
 };
 
 struct ScoreInd
