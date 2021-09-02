@@ -41,6 +41,41 @@ public:
 private:
     std::pair<int, int> m_mapDimension;
 };
+class SegmentColection {
+
+public:
+    bool isSegmentAtPosition(int x, int y) const;
+    void updateSegmentsIfSuccessfullMove(Segment const& newHead, Map const& m_map);
+    void addHeadSegment(Segment const& newHead), IPort& m_displayPort;
+    void removeTailSegmentIfNotScored(Segment const& newHead);
+    void removeTailSegment();
+    void add(Segment segment) {
+        m_segments.push_back(segment);
+    }
+    Segment front() {
+        return m_segments.front();
+    }
+
+private:
+    std::list<Segment> m_segments;
+};
+
+
+class Segment {
+
+public:
+    Segment() = default;
+    Segment(int x, int y) {
+        position = std::make_pair(x,y);
+    }
+
+    std::pair<int, int> getPosition() const{
+        return position;
+    }
+
+private:
+    std::pair<int, int> position;
+};
 
 class Controller : public IEventHandler
 {
@@ -58,15 +93,16 @@ private:
     IPort& m_scorePort;
 
     Map m_map;
+    SegmentColection segments;
     std::pair<int, int> m_foodPosition;
-
+/*
     struct Segment
     {
         int x;
         int y;
     };
-
-    std::list<Segment> m_segments;
+*/
+    ;
     Direction m_currentDirection;
 
     void handleTimeoutInd();
@@ -75,14 +111,8 @@ private:
     void handleFoodResp(std::unique_ptr<Event>);
     void handlePauseInd(std::unique_ptr<Event>);
 
-    bool isSegmentAtPosition(int x, int y) const;
-    Segment calculateNewHead() const;
-    void updateSegmentsIfSuccessfullMove(Segment const& newHead);
-    void addHeadSegment(Segment const& newHead);
-    void removeTailSegmentIfNotScored(Segment const& newHead);
-    void removeTailSegment();
-
-
+    
+    Segment calculateNewHead(SegmentColection& m_segments) const;
     void updateFoodPosition(int x, int y, std::function<void()> clearPolicy);
     void sendClearOldFood();
     void sendPlaceNewFood(int x, int y);
