@@ -7,6 +7,9 @@
 
 #include "IEventHandler.hpp"
 #include "SnakeInterface.hpp"
+#include "Map.hpp"
+#include "SegmentColection.hpp"
+#include "Segment.hpp"
 
 class Event;
 class IPort;
@@ -22,81 +25,6 @@ struct UnexpectedEventException : std::runtime_error
 {
     UnexpectedEventException();
 };
-
-class Segment {
-
-public:
-    Segment() = default;
-    Segment(int x, int y) {
-        position = std::make_pair(x,y);
-    }
-
-    std::pair<int, int>& getPosition(){
-        return position;
-    }
-    std::pair<int, int> getPosition() const{
-        return position;
-    }
-
-private:
-    std::pair<int, int> position;
-};
-
-class Controller;
-
-class Map {
-
-public:
-    Map() = default;
-    Map(int width, int height) {
-        m_mapDimension = std::make_pair(width, height);
-    }
-
-    Segment calculateNewHead(Controller& controller) const;
-    void updateFoodPosition(int x, int y, Controller& controller, std::function<void()> clearPolicy);
-    void sendClearOldFood(Controller& controller);
-    void sendPlaceNewFood(int x, int y, Controller& controller);
-
-    std::pair<int, int>& getMapDimension()  { 
-        return m_mapDimension; 
-    }
-    
-    void setFoodPosition(int x, int y) {
-        m_foodPosition = std::make_pair(x,y);
-    } 
-
-    std::pair<int, int>& getFoodPosition()  { 
-        return m_foodPosition; 
-    }
-
-    bool isPositionOutsideMap(int x, int y) const {
-        return x < 0 or y < 0 or x >= m_mapDimension.first or y >= m_mapDimension.second;
-    }
-private:
-    std::pair<int, int> m_mapDimension;
-    std::pair<int, int> m_foodPosition;
-};
-
-class SegmentColection {
-
-public:
-    bool isSegmentAtPosition(int x, int y) const;
-    void updateSegmentsIfSuccessfullMove(Segment const& newHead,  Controller& controller);
-    void addHeadSegment(Segment const& newHead, Controller& controller);
-    void removeTailSegmentIfNotScored(Segment const& newHead, Controller& controller);
-    void removeTailSegment(Controller& controller );
-    void add(Segment segment) {
-        m_segments.push_back(segment);
-    }
-    Segment front() {
-        return m_segments.front();
-    }
-
-private:
-    std::list<Segment> m_segments;
-};
-
-
 
 class Controller : public IEventHandler
 {
@@ -146,10 +74,6 @@ private:
     void handleFoodInd(std::unique_ptr<Event>);
     void handleFoodResp(std::unique_ptr<Event>);
     void handlePauseInd(std::unique_ptr<Event>);
-
-    
- 
-
     bool m_paused;
 };
 
