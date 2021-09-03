@@ -1,12 +1,13 @@
 #pragma once
 
 #include <utility>
-#include "SnakeWorldDimension.hpp"
 #include "SnakePosition.hpp"
 
 
 namespace Snake
 {
+
+typedef Position Dimension; 
 
 class World
 {

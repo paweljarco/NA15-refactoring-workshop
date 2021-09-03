@@ -1,5 +1,4 @@
 #include "SnakeWorld.hpp"
-#include "SnakeWorldDimension.hpp"
 #include "SnakePosition.hpp"
 
 namespace Snake
